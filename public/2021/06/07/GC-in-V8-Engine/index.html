@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>GC in V8 Engine | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="空间在node.js中查看内存使用情况 1process.memoryUsage() 堆空间限制原因之一：GC耗时影响体验和程序性能，限制空间总大小可以限制GC时长 大致过程1 标记目前V8采用可达性来判断堆中是否是活动对象(是否需要回收)即从根节点(GC Roots)进行遍历，遍历到的为活动对象、反之为非活动对象根节点包括但不限于:  windows 对象 DOM树 栈中变量  2 回收清理内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GC in V8 Engine">
+<meta property="og:url" content="http://example.com/2021/06/07/GC-in-V8-Engine/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="空间在node.js中查看内存使用情况 1process.memoryUsage() 堆空间限制原因之一：GC耗时影响体验和程序性能，限制空间总大小可以限制GC时长 大致过程1 标记目前V8采用可达性来判断堆中是否是活动对象(是否需要回收)即从根节点(GC Roots)进行遍历，遍历到的为活动对象、反之为非活动对象根节点包括但不限于:  windows 对象 DOM树 栈中变量  2 回收清理内存">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9594241-3d0853b2ec7560da.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9594241-1a979b10dd034531.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9594241-501fe7e7cf13cd9b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9594241-cc7540e9d41a0ec2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9594241-9419796d6f44e29f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9594241-159089b80547b732.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2021-06-07T06:14:00.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.756Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/9594241-3d0853b2ec7560da.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-GC-in-V8-Engine" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/06/07/GC-in-V8-Engine/" class="article-date">
+  <time class="dt-published" datetime="2021-06-07T06:14:00.000Z" itemprop="datePublished">2021-06-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      GC in V8 Engine
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="空间"><a href="#空间" class="headerlink" title="空间"></a>空间</h1><p>在node.js中查看内存使用情况</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">process.memoryUsage()</span><br></pre></td></tr></table></figure>
+<p>堆空间限制原因之一：GC耗时影响体验和程序性能，限制空间总大小可以限制GC时长</p>
+<h1 id="大致过程"><a href="#大致过程" class="headerlink" title="大致过程"></a>大致过程</h1><h3 id="1-标记"><a href="#1-标记" class="headerlink" title="1 标记"></a>1 标记</h3><p>目前V8采用可达性来判断堆中是否是活动对象(是否需要回收)<br>即从根节点(GC Roots)进行遍历，遍历到的为活动对象、反之为非活动对象<br>根节点包括但不限于:</p>
+<ul>
+<li>windows 对象</li>
+<li>DOM树</li>
+<li>栈中变量</li>
+</ul>
+<h3 id="2-回收"><a href="#2-回收" class="headerlink" title="2 回收"></a>2 回收</h3><p>清理内存中未被标记对象</p>
+<h3 id="3-整理"><a href="#3-整理" class="headerlink" title="3 整理"></a>3 整理</h3><p>清理内存碎片，防止出现无大连续空间可分配情况</p>
+<h1 id="代际假说"><a href="#代际假说" class="headerlink" title="代际假说"></a>代际假说</h1><blockquote>
+<ul>
+<li>大部分对象在内存中存在的时间很短，就是说很多对象一经分配内存，立即被使用后，很快就不在被需要了。比如函数局部变量，或者块级作用域中的变量</li>
+<li>不死的对象，会存活得很久。比如全局变量、 window、DOM等对象</li>
+</ul>
+</blockquote>
+<p>基于代际假说，V8 将堆分为新生代和老生代<br>望文生义：</p>
+<ul>
+<li>新生代存放生存时间较短的对象</li>
+<li>老生代存放生存时间较长的对象</li>
+</ul>
+<p>分别对应了两个垃圾回收器</p>
+<h3 id="副垃圾回收器—作用范围新生代"><a href="#副垃圾回收器—作用范围新生代" class="headerlink" title="副垃圾回收器—作用范围新生代"></a>副垃圾回收器—作用范围新生代</h3><p>采用Scavenge算法，将新生代内部分为两个区</p>
+<ul>
+<li>From Space 对象区域 新</li>
+<li>To Space 空闲区域</li>
+</ul>
+<p>新对象都放在From Space，当From Space快满了，便执行上述的<code>标记</code>过程，然后将存活的对象复制到To Space，复制的过程也发挥了上述的<code>整理</code>过程的作用。复制完成后，将From Space 和 To Space角色翻转，进入下一个周期</p>
+<h5 id="对象晋升"><a href="#对象晋升" class="headerlink" title="对象晋升"></a>对象晋升</h5><p>将经过两次回收依然存活的对象移入老生代</p>
+<h3 id="主垃圾回收器—作用范围老生代"><a href="#主垃圾回收器—作用范围老生代" class="headerlink" title="主垃圾回收器—作用范围老生代"></a>主垃圾回收器—作用范围老生代</h3><h5 id="标记-清除-Mark-Sweep"><a href="#标记-清除-Mark-Sweep" class="headerlink" title="标记-清除 (Mark Sweep)"></a>标记-清除 (Mark Sweep)</h5><p><img src="https://upload-images.jianshu.io/upload_images/9594241-3d0853b2ec7560da.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="标记-清除"><br>将未标记的非活动对象清除</p>
+<h5 id="标记-整理-（Mark-Compact）"><a href="#标记-整理-（Mark-Compact）" class="headerlink" title="标记-整理 （Mark Compact）"></a>标记-整理 （Mark Compact）</h5><p><img src="https://upload-images.jianshu.io/upload_images/9594241-1a979b10dd034531.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="标记-整理"><br>将标记的活动对象移到内存区域的一端，然后对另一端的内存整体消除</p>
+<h1 id="STW"><a href="#STW" class="headerlink" title="STW"></a>STW</h1><p>JavaScript运行在主线程上，GC需要将主线程内的脚本暂停，GC完成之后再恢复执行，称为Stop-The-World。STW会造成程序卡顿，影响体验。为此，人们提出了一些策略来优化GC的执行</p>
+<h1 id="并行回收"><a href="#并行回收" class="headerlink" title="并行回收"></a>并行回收</h1><p><img src="https://upload-images.jianshu.io/upload_images/9594241-501fe7e7cf13cd9b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="并行回收"></p>
+<p>GC时多线程，但仍然STW</p>
+<h1 id="增量标记"><a href="#增量标记" class="headerlink" title="增量标记"></a>增量标记</h1><p><img src="https://upload-images.jianshu.io/upload_images/9594241-cc7540e9d41a0ec2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Incremental Marking"><br>由于是增量过程，需要记下上一次执行标记的情况</p>
+<h3 id="三色标记"><a href="#三色标记" class="headerlink" title="三色标记"></a>三色标记</h3><ul>
+<li>起初，所有对象都是白色</li>
+<li>发现一个对象，就将它标为灰色</li>
+<li>当一个灰色对象中所有字段都被访问过，这个灰色对象变为黑色</li>
+<li>当没有灰色对象时，剩余白色对象可被安全回收</li>
+</ul>
+<h3 id="写屏障"><a href="#写屏障" class="headerlink" title="写屏障"></a>写屏障</h3><p>由于是增量标记，两次标记间程序可能会写入新的对象，导致出现不该被回收的对象被回收，如后插入的对象没来得及标记(为白色)。<br>写屏障强制规定黑色对象不能直接指向白色对象<br><img src="https://upload-images.jianshu.io/upload_images/9594241-9419796d6f44e29f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="V8中的写屏障"></p>
+<h1 id="并发回收"><a href="#并发回收" class="headerlink" title="并发回收"></a>并发回收</h1><p><img src="https://upload-images.jianshu.io/upload_images/9594241-159089b80547b732.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="并发回收"></p>
+<p>感觉很迷幻啊，这个原理我暂时也不是很清楚，留个坑，慢慢补</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/06/07/GC-in-V8-Engine/" data-id="cm48jokcy000doni89udk302o" data-title="GC in V8 Engine" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/06/10/em-rem/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          em/rem
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/05/31/%E8%AE%B0%E4%B8%80%E4%B8%AA%E5%BB%B6%E6%97%B6%E6%89%A7%E8%A1%8C%E9%98%9F%E5%88%97%E7%9A%84%E5%AE%9E%E7%8E%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">记一个延时执行队列的实现</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

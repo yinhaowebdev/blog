@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>跳表与redis数据结构zset | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="跳表概念跳表是链表的一种扩展链表的查找性能低，复杂度为O(n)通过设置多级索引的方法降低查找的复杂度 动态结构跳表是一种动态的数据结构，对其插入删除时会自动调整，如不调整，可能退化成链表。删除时，如果节点对应索引，也删除对应的索引插入时，通过随机函数判定要不要添加索引以及添加索引到哪一级 Redis zset集合中的元素不能重复，但是可以排序，是有序的。它给每个元素设置一个分数（score）作为排">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跳表与redis数据结构zset">
+<meta property="og:url" content="http://example.com/2020/10/30/Untitled/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="跳表概念跳表是链表的一种扩展链表的查找性能低，复杂度为O(n)通过设置多级索引的方法降低查找的复杂度 动态结构跳表是一种动态的数据结构，对其插入删除时会自动调整，如不调整，可能退化成链表。删除时，如果节点对应索引，也删除对应的索引插入时，通过随机函数判定要不要添加索引以及添加索引到哪一级 Redis zset集合中的元素不能重复，但是可以排序，是有序的。它给每个元素设置一个分数（score）作为排">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-30T03:56:09.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.758Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Untitled" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2020/10/30/Untitled/" class="article-date">
+  <time class="dt-published" datetime="2020-10-30T03:56:09.000Z" itemprop="datePublished">2020-10-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      跳表与redis数据结构zset
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="跳表概念"><a href="#跳表概念" class="headerlink" title="跳表概念"></a>跳表概念</h3><p>跳表是链表的一种扩展<br>链表的查找性能低，复杂度为O(n)<br>通过设置多级索引的方法降低查找的复杂度</p>
+<h3 id="动态结构"><a href="#动态结构" class="headerlink" title="动态结构"></a>动态结构</h3><p>跳表是一种动态的数据结构，对其插入删除时会自动调整，如不调整，可能退化成链表。<br>删除时，如果节点对应索引，也删除对应的索引<br>插入时，通过<strong>随机函数</strong>判定要不要添加索引以及添加索引到哪一级</p>
+<h3 id="Redis-zset"><a href="#Redis-zset" class="headerlink" title="Redis zset"></a>Redis zset</h3><p>集合中的元素不能重复，但是可以排序，是有序的。它给每个元素设置一个分数（score）作为排序的依据，有序集合提供了获取指定分数和元素范围查询，计算成员排名。</p>
+<h3 id="相关源码"><a href="#相关源码" class="headerlink" title="相关源码"></a>相关源码</h3><p>zset 的数据结构由跳表和哈希表共同完成</p>
+<p>数据结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct zset &#123;</span><br><span class="line">    dict *dict;</span><br><span class="line">    zskiplist *zsl;</span><br><span class="line">&#125; zset;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct zskiplist &#123;</span><br><span class="line">    struct zskiplistNode *header, *tail;</span><br><span class="line">    unsigned long length;</span><br><span class="line">    int level;</span><br><span class="line">&#125; zskiplist;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">typedef struct zskiplistNode &#123;</span><br><span class="line">    sds ele;      </span><br><span class="line">    double score; </span><br><span class="line">    struct zskiplistNode *backward;</span><br><span class="line">    struct zskiplistLevel &#123;</span><br><span class="line">        struct zskiplistNode *forward;</span><br><span class="line">        unsigned long span;</span><br><span class="line">    &#125; level[];</span><br><span class="line">&#125; zskiplistNode;</span><br></pre></td></tr></table></figure>
+<p>插入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">zskiplistNode *zslInsert(zskiplist *zsl, double score, sds ele) &#123;</span><br><span class="line">    zskiplistNode *update[ZSKIPLIST_MAXLEVEL], *x;</span><br><span class="line">    unsigned int rank[ZSKIPLIST_MAXLEVEL];</span><br><span class="line">    int i, level;</span><br><span class="line"></span><br><span class="line">    serverAssert(!isnan(score));</span><br><span class="line">    x = zsl-&gt;header;</span><br><span class="line">    for (i = zsl-&gt;level-1; i &gt;= 0; i--) &#123;</span><br><span class="line">        /* store rank that is crossed to reach the insert position */</span><br><span class="line">        rank[i] = i == (zsl-&gt;level-1) ? 0 : rank[i+1];</span><br><span class="line">        while (x-&gt;level[i].forward &amp;&amp;</span><br><span class="line">                (x-&gt;level[i].forward-&gt;score &lt; score ||</span><br><span class="line">                    (x-&gt;level[i].forward-&gt;score == score &amp;&amp;</span><br><span class="line">                    sdscmp(x-&gt;level[i].forward-&gt;ele,ele) &lt; 0)))</span><br><span class="line">        &#123;</span><br><span class="line">            rank[i] += x-&gt;level[i].span;</span><br><span class="line">            x = x-&gt;level[i].forward;</span><br><span class="line">        &#125;</span><br><span class="line">        update[i] = x;</span><br><span class="line">    &#125;</span><br><span class="line">    /* we assume the element is not already inside, since we allow duplicated</span><br><span class="line">     * scores, reinserting the same element should never happen since the</span><br><span class="line">     * caller of zslInsert() should test in the hash table if the element is</span><br><span class="line">     * already inside or not. */</span><br><span class="line">    level = zslRandomLevel();</span><br><span class="line">    if (level &gt; zsl-&gt;level) &#123;</span><br><span class="line">        for (i = zsl-&gt;level; i &lt; level; i++) &#123;</span><br><span class="line">            rank[i] = 0;</span><br><span class="line">            update[i] = zsl-&gt;header;</span><br><span class="line">            update[i]-&gt;level[i].span = zsl-&gt;length;</span><br><span class="line">        &#125;</span><br><span class="line">        zsl-&gt;level = level;</span><br><span class="line">    &#125;</span><br><span class="line">    x = zslCreateNode(level,score,ele);</span><br><span class="line">    for (i = 0; i &lt; level; i++) &#123;</span><br><span class="line">        x-&gt;level[i].forward = update[i]-&gt;level[i].forward;</span><br><span class="line">        update[i]-&gt;level[i].forward = x;</span><br><span class="line"></span><br><span class="line">        /* update span covered by update[i] as x is inserted here */</span><br><span class="line">        x-&gt;level[i].span = update[i]-&gt;level[i].span - (rank[0] - rank[i]);</span><br><span class="line">        update[i]-&gt;level[i].span = (rank[0] - rank[i]) + 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /* increment span for untouched levels */</span><br><span class="line">    for (i = level; i &lt; zsl-&gt;level; i++) &#123;</span><br><span class="line">        update[i]-&gt;level[i].span++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    x-&gt;backward = (update[0] == zsl-&gt;header) ? NULL : update[0];</span><br><span class="line">    if (x-&gt;level[0].forward)</span><br><span class="line">        x-&gt;level[0].forward-&gt;backward = x;</span><br><span class="line">    else</span><br><span class="line">        zsl-&gt;tail = x;</span><br><span class="line">    zsl-&gt;length++;</span><br><span class="line">    return x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>随机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/* Returns a random level for the new skiplist node we are going to create.</span><br><span class="line"> * The return value of this function is between 1 and ZSKIPLIST_MAXLEVEL</span><br><span class="line"> * (both inclusive), with a powerlaw-alike distribution where higher</span><br><span class="line"> * levels are less likely to be returned. */</span><br><span class="line">int zslRandomLevel(void) &#123;</span><br><span class="line">    int level = 1;</span><br><span class="line">    while ((random()&amp;0xFFFF) &lt; (ZSKIPLIST_P * 0xFFFF))</span><br><span class="line">        level += 1;</span><br><span class="line">    return (level&lt;ZSKIPLIST_MAXLEVEL) ? level : ZSKIPLIST_MAXLEVEL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://juejin.im/post/6844904181900247053">https://juejin.im/post/6844904181900247053</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.im/post/6859134569703669774#heading-6">https://juejin.im/post/6859134569703669774#heading-6</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/10/30/Untitled/" data-id="cm48jokd0000toni86xmx6840" data-title="跳表与redis数据结构zset" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/11/09/single-spa-%E7%AE%80%E4%BB%8B/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          single-spa 简介
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/10/28/%E5%86%92%E6%B3%A1-%E6%8F%92%E5%85%A5-%E5%BD%92%E5%B9%B6-%E5%BF%AB%E9%80%9F-%E6%8E%92%E5%BA%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">冒泡/插入/归并/快速 排序</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Introduction to Mobx | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Mobx是什么MobX实现简单、可扩展的状态管理。 使用MobX将应用变成响应式可归纳为三部曲：  定义状态并使其可观察 (Observable)创建视图以响应状态的变化 (observer)更改状态(action)  安装 cnpm install –save mobx mobx-react  概念Observable Observable 值可以是JS基本数据类型、引用类型、普通对象、类实例、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Introduction to Mobx">
+<meta property="og:url" content="http://example.com/2019/08/28/Introduction-to-Mobx/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="Mobx是什么MobX实现简单、可扩展的状态管理。 使用MobX将应用变成响应式可归纳为三部曲：  定义状态并使其可观察 (Observable)创建视图以响应状态的变化 (observer)更改状态(action)  安装 cnpm install –save mobx mobx-react  概念Observable Observable 值可以是JS基本数据类型、引用类型、普通对象、类实例、">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-08-27T16:11:00.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.756Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Introduction-to-Mobx" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/08/28/Introduction-to-Mobx/" class="article-date">
+  <time class="dt-published" datetime="2019-08-27T16:11:00.000Z" itemprop="datePublished">2019-08-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Introduction to Mobx
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="Mobx是什么"><a href="#Mobx是什么" class="headerlink" title="Mobx是什么"></a>Mobx是什么</h3><p>MobX实现简单、可扩展的状态管理。</p>
+<p>使用MobX将应用变成响应式可归纳为三部曲：</p>
+<blockquote>
+<p>定义状态并使其可观察 (Observable)<br>创建视图以响应状态的变化 (observer)<br>更改状态(action)</p>
+</blockquote>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><blockquote>
+<p>cnpm install –save mobx mobx-react</p>
+</blockquote>
+<h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><h5 id="Observable"><a href="#Observable" class="headerlink" title="Observable"></a>Observable</h5><blockquote>
+<p>Observable 值可以是JS基本数据类型、引用类型、普通对象、类实例、数组和映射。</p>
+</blockquote>
+<p>返回相应的<code>Observable</code>对象</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;observable&#125; <span class="keyword">from</span> <span class="string">&#x27;mobx&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> map = observable.<span class="title function_">map</span>(&#123; <span class="attr">key</span>: <span class="string">&quot;value&quot;</span>&#125;);</span><br><span class="line">map.<span class="title function_">set</span>(<span class="string">&quot;key&quot;</span>, <span class="string">&quot;new value&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> list = <span class="title function_">observable</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>]);</span><br><span class="line">list[<span class="number">2</span>] = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> person = <span class="title function_">observable</span>(&#123;</span><br><span class="line">    <span class="attr">firstName</span>: <span class="string">&quot;Clive Staples&quot;</span>,</span><br><span class="line">    <span class="attr">lastName</span>: <span class="string">&quot;Lewis&quot;</span></span><br><span class="line">&#125;);</span><br><span class="line">person.<span class="property">firstName</span> = <span class="string">&quot;C.S.&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> temperature = observable.<span class="title function_">box</span>(<span class="number">20</span>);</span><br><span class="line">temperature.<span class="title function_">set</span>(<span class="number">25</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;observable&#125; <span class="keyword">from</span> <span class="string">&#x27;mobx&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> appState = <span class="title function_">observable</span>(&#123;</span><br><span class="line">    <span class="attr">timer</span>: <span class="number">0</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h5 id="observer"><a href="#observer" class="headerlink" title="observer"></a>observer</h5><p>使用mobx-react observer() 来包裹 React 组件，形成了<code>observer</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; observer &#125; <span class="keyword">from</span> <span class="string">&#x27;mobx-react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="title class_">App</span> = <span class="title function_">observer</span>(<span class="function">(<span class="params">&#123; appState &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&quot;App&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Time passed: &#123;appState.timer&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    );</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>or</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; observer &#125; <span class="keyword">from</span> <span class="string">&#x27;mobx-react&#x27;</span>;</span><br><span class="line"></span><br><span class="line">@observer</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">App</span> <span class="keyword">extends</span> <span class="title class_ inherited__">React.Component</span> &#123;</span><br><span class="line">  <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">         <span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&quot;App&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Time passed: &#123;this.props.appState.timer&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> <span class="attr">appState</span>=<span class="string">&#123;appState&#125;</span> /&gt;</span></span>, <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<h5 id="action"><a href="#action" class="headerlink" title="action"></a>action</h5><figure class="highlight plaintext"><figcaption><span>用来改变 ```observable```的状态。</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+<p>import { observable, action } from ‘mobx’;<br>var appState &#x3D; observable({<br>    timer: 0<br>});<br>appState.resetTimer &#x3D; action(function reset() {<br>    appState.timer &#x3D; 0<br>});<br>appState.addTimer &#x3D; action(function add() {<br>    appState.timer++<br>});<br>let App &#x3D; observer(({ appState }) &#x3D;&gt; {<br>    return (<br>        <div className="App"><br>            <button onClick={appState.resetTimer}><br>                Seconds passed: {appState.timer}<br>            </button><br>            <button onClick={appState.addTimer}><br>                +<br>            </button><br>        </div><br>    );<br>});<br>ReactDOM.render(<App appState={appState} />, document.getElementById(‘root’));</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">需要注意的是，observable的状态不仅仅可以通过action改变。</span><br><span class="line"></span><br><span class="line">##### 对比Mobx和Redux</span><br><span class="line"></span><br><span class="line">* 相比```Redux```，```Mobx``` 省略了很多代码量</span><br><span class="line">* ```Redux```的状态管理更严格</span><br><span class="line">* ```Mobx``` 可以设置多个store，```Redux```只能设置一个</span><br><span class="line">* ```Mobx``` 对性能更友好 （```观察者模式``` vs ```Object.assign()```）</span><br><span class="line"></span><br><span class="line">### 概念回顾</span><br><span class="line"></span><br><span class="line">observable 类似于 store</span><br><span class="line"></span><br><span class="line">observer 是装饰后的react组件</span><br><span class="line"></span><br><span class="line">action 用来改变 observable 的状态</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### Class声明 Observerable</span><br></pre></td></tr></table></figure>
+<p>class AppState {<br>    @observable timer &#x3D; 2<br>    @action clearTimer() {<br>        this.timer &#x3D; 0<br>    }<br>}</p>
+<p>var appState &#x3D; new AppState()</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line">@observer</span><br><span class="line">class App extends React.Component &#123;</span><br><span class="line">  componentDidMount() &#123;</span><br><span class="line">    this.props.appState.timer++</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;div className=&quot;App&quot;&gt;</span><br><span class="line">          &lt;h1&gt;Time passed: &#123;this.props.appState.timer&#125;&lt;/h1&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(&lt;App appState=&#123;appState&#125; /&gt;, document.getElementById(&#x27;root&#x27;));</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="组件内定义局部observerable"><a href="#组件内定义局部observerable" class="headerlink" title="组件内定义局部observerable"></a>组件内定义局部observerable</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">@observer</span><br><span class="line">class TodoList extends React.Component &#123;</span><br><span class="line">  @observable newTodoTitle = &quot;&quot;;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;form onSubmit=&#123;this.handleFormSubmit&#125;&gt;</span><br><span class="line">          New Todo:</span><br><span class="line">          &lt;input</span><br><span class="line">            type=&quot;text&quot;</span><br><span class="line">            value=&#123;this.newTodoTitle&#125;</span><br><span class="line">            onChange=&#123;this.handleInputChange&#125;</span><br><span class="line">          /&gt;</span><br><span class="line">          &lt;button type=&quot;submit&quot;&gt;Add&lt;/button&gt;</span><br><span class="line">        &lt;/form&gt;</span><br><span class="line">        &lt;hr /&gt;</span><br><span class="line">        &lt;ul&gt;</span><br><span class="line">          &#123;this.props.store.todos.map(todo =&gt; (</span><br><span class="line">            &lt;Todo todo=&#123;todo&#125; key=&#123;todo.id&#125; /&gt;</span><br><span class="line">          ))&#125;</span><br><span class="line">        &lt;/ul&gt;</span><br><span class="line">        Tasks left: &#123;this.props.store.unfinishedTodoCount&#125;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @action</span><br><span class="line">  handleInputChange = e =&gt; &#123;</span><br><span class="line">    this.newTodoTitle = e.target.value;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  @action</span><br><span class="line">  handleFormSubmit = e =&gt; &#123;</span><br><span class="line">    this.props.store.addTodo(this.newTodoTitle);</span><br><span class="line">    this.newTodoTitle = &quot;&quot;;</span><br><span class="line">    e.preventDefault();</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="computed"><a href="#computed" class="headerlink" title="computed"></a>computed</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class AppState &#123;</span><br><span class="line">    @observable timer = 2</span><br><span class="line">    @computed get timessTwo() &#123;</span><br><span class="line">        return this.timer * 2</span><br><span class="line">    &#125;</span><br><span class="line">    set timessTwo(timessTwo) &#123;</span><br><span class="line">        this.timer = timessTwo / 2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@observer</span><br><span class="line">class App extends React.Component &#123;</span><br><span class="line">  componentDidMount() &#123;</span><br><span class="line">    this.props.appState.timessTwo++</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;div className=&quot;App&quot;&gt;</span><br><span class="line">          &lt;h1&gt;Time passed: &#123;this.props.appState.timer&#125;&lt;/h1&gt;</span><br><span class="line">          &lt;h2&gt;after times 2 :&#123;this.props.appState.timessTwo&#125;&lt;/h2&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="autorun-reaction"><a href="#autorun-reaction" class="headerlink" title="autorun &amp; reaction"></a>autorun &amp; reaction</h3><p>监听</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">autorun(() =&gt; &#123;</span><br><span class="line">    console.log(appState.timer)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const reaction1 = reaction(</span><br><span class="line">    () =&gt; appState.timer ,</span><br><span class="line">    timer =&gt; console.log(`reaction 1: $&#123;timer&#125;`)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnpm i mobx-react-devtools</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import DevTools from &quot;mobx-react-devtools&quot;;</span><br><span class="line"></span><br><span class="line">&#123;process.env.NODE_ENV !== &#x27;production&#x27; ? &lt;DevTools /&gt; : null&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="严格模式"><a href="#严格模式" class="headerlink" title="严格模式"></a>严格模式</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import &#123; configure &#125; from &quot;mobx&quot;;</span><br><span class="line">configure(&#123; enforceActions: true &#125;) // 不允许在action之外进行状态修改</span><br></pre></td></tr></table></figure>
+
+<h3 id="异步"><a href="#异步" class="headerlink" title="异步"></a>异步</h3><p>1 runInAction</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">mobx.configure(&#123; enforceActions: true &#125;)</span><br><span class="line"></span><br><span class="line">class Store &#123;</span><br><span class="line">    @observable githubProjects = []</span><br><span class="line">    @observable state = &quot;pending&quot; // &quot;pending&quot; / &quot;done&quot; / &quot;error&quot;</span><br><span class="line"></span><br><span class="line">    @action</span><br><span class="line">    fetchProjects() &#123;</span><br><span class="line">        this.githubProjects = []</span><br><span class="line">        this.state = &quot;pending&quot;</span><br><span class="line">        fetchGithubProjectsSomehow().then(</span><br><span class="line">            projects =&gt; &#123;</span><br><span class="line">                const filteredProjects = somePreprocessing(projects)</span><br><span class="line">                // 将‘“最终的”修改放入一个异步动作中</span><br><span class="line">                runInAction(() =&gt; &#123;</span><br><span class="line">                    this.githubProjects = filteredProjects</span><br><span class="line">                    this.state = &quot;done&quot;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;,</span><br><span class="line">            error =&gt; &#123;</span><br><span class="line">                // 过程的另一个结局:...</span><br><span class="line">                runInAction(() =&gt; &#123;</span><br><span class="line">                    this.state = &quot;error&quot;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2 await&#x2F;async</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class Store &#123;</span><br><span class="line">    @observable githubProjects = []</span><br><span class="line">    @observable state = &quot;pending&quot; // &quot;pending&quot; / &quot;done&quot; / &quot;error&quot;</span><br><span class="line"></span><br><span class="line">    @action</span><br><span class="line">    async fetchProjects() &#123;</span><br><span class="line">        this.githubProjects = []</span><br><span class="line">        this.state = &quot;pending&quot;</span><br><span class="line">        try &#123;</span><br><span class="line">            const projects = await fetchGithubProjectsSomehow()</span><br><span class="line">            const filteredProjects = somePreprocessing(projects)</span><br><span class="line">            // await 之后，再次修改状态需要动作:</span><br><span class="line">            runInAction(() =&gt; &#123;</span><br><span class="line">                this.state = &quot;done&quot;</span><br><span class="line">                this.githubProjects = filteredProjects</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125; catch (error) &#123;</span><br><span class="line">            runInAction(() =&gt; &#123;</span><br><span class="line">                this.state = &quot;error&quot;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3 flow(generator function)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Store &#123;</span><br><span class="line">    @observable githubProjects = []</span><br><span class="line">    @observable state = &quot;pending&quot;</span><br><span class="line"></span><br><span class="line">    fetchProjects = flow(function * () &#123; // &lt;- 注意*号，这是生成器函数！</span><br><span class="line">        this.githubProjects = []</span><br><span class="line">        this.state = &quot;pending&quot;</span><br><span class="line">        try &#123;</span><br><span class="line">            const projects = yield fetchGithubProjectsSomehow() // 用 yield 代替 await</span><br><span class="line">            const filteredProjects = somePreprocessing(projects)</span><br><span class="line">            // 异步代码块会被自动包装成动作并修改状态</span><br><span class="line">            this.state = &quot;done&quot;</span><br><span class="line">            this.githubProjects = filteredProjects</span><br><span class="line">        &#125; catch (error) &#123;</span><br><span class="line">            this.state = &quot;error&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="tip"><a href="#tip" class="headerlink" title="tip"></a>tip</h3><h5 id="使用大量的小组件"><a href="#使用大量的小组件" class="headerlink" title="使用大量的小组件"></a>使用大量的小组件</h5><p>@observer 组件会追踪它们使用的所有值，并且当它们中的任何一个改变时重新渲染。 所以你的组件越小，它们需要重新渲染产生的变化则越小;这意味着用户界面的更多部分具备彼此独立渲染的可能性。</p>
+<h3 id="脚手架"><a href="#脚手架" class="headerlink" title="脚手架"></a>脚手架</h3><p><a target="_blank" rel="noopener" href="https://github.com/mobxjs/mobx-react-boilerplate"> https://github.com/mobxjs/mobx-react-boilerplate</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/08/28/Introduction-to-Mobx/" data-id="cm48jokcy000goni8fnl536z4" data-title="Introduction to Mobx" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/12/%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84vscode%E6%8F%92%E4%BB%B6/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          实现简单的vscode插件
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/08/15/React-PureComponent-React-memo/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">React.PureComponent &amp; React.memo()</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

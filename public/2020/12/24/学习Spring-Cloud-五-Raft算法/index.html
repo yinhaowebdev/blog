@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>学习Spring Cloud(五): Raft算法 | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="引言假设 Server 有多个节点，需要用一些策略保证节点数据的一致性。当前被广泛应用的一致性算法有：  Raft Paxos ZAB Gossip  本文介绍其中的Raft，使用它的微服务组件有 consul 和 ectd  基础对于集群中每一个节点，有三种可能的状态  Leader Candidate Follower  对于每一次变化，有两个过程：  Log Commit  选举概述 一开始">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习Spring Cloud(五): Raft算法">
+<meta property="og:url" content="http://example.com/2020/12/24/%E5%AD%A6%E4%B9%A0Spring-Cloud-%E4%BA%94-Raft%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="引言假设 Server 有多个节点，需要用一些策略保证节点数据的一致性。当前被广泛应用的一致性算法有：  Raft Paxos ZAB Gossip  本文介绍其中的Raft，使用它的微服务组件有 consul 和 ectd  基础对于集群中每一个节点，有三种可能的状态  Leader Candidate Follower  对于每一次变化，有两个过程：  Log Commit  选举概述 一开始">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-12-24T09:02:00.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.761Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-学习Spring-Cloud-五-Raft算法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2020/12/24/%E5%AD%A6%E4%B9%A0Spring-Cloud-%E4%BA%94-Raft%E7%AE%97%E6%B3%95/" class="article-date">
+  <time class="dt-published" datetime="2020-12-24T09:02:00.000Z" itemprop="datePublished">2020-12-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      学习Spring Cloud(五): Raft算法
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>假设 Server 有多个节点，需要用一些策略保证节点数据的一致性。<br>当前被广泛应用的一致性算法有：</p>
+<ul>
+<li>Raft</li>
+<li>Paxos</li>
+<li>ZAB</li>
+<li>Gossip</li>
+</ul>
+<p>本文介绍其中的Raft，使用它的微服务组件有 consul 和 ectd </p>
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>对于集群中每一个节点，有三种可能的状态</p>
+<ul>
+<li>Leader</li>
+<li>Candidate</li>
+<li>Follower</li>
+</ul>
+<p>对于每一次变化，有两个过程：</p>
+<ul>
+<li>Log</li>
+<li>Commit</li>
+</ul>
+<h3 id="选举"><a href="#选举" class="headerlink" title="选举"></a>选举</h3><h5 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h5><ul>
+<li>一开始，所有节点都是Follower</li>
+<li>当一个节点“听不见”Leader的时候，它会变成Candidate</li>
+<li>Candidate向其它节点“拉票”</li>
+<li>节点收到“拉票”后可以投票</li>
+<li>当Candidate收到了大多数节点的投票时，它变成Leader</li>
+</ul>
+<h5 id="详细"><a href="#详细" class="headerlink" title="详细"></a>详细</h5><ul>
+<li><p>Raft中关于选举，有两种timeout</p>
+</li>
+<li><p>election timeout：Follower变为Candidate的时间（随机 150ms ～ 300ms）</p>
+</li>
+<li><p>election timeout之后Follower变为Candidate，开始一个term：投票给自己并给其它节点发送 Request Vote</p>
+</li>
+<li><p>如果收到Request Vote的节点在当前的term中还没有投票，那么会投票给发来Request Vote的Candidate</p>
+</li>
+<li><p>发送Request Vote和投票都会导致election timeout重置</p>
+</li>
+<li><p>当Candidate收到了大多数节点的投票时，它变成Leader</p>
+</li>
+<li><p>heartbeat timeout: Leader向其它节点发送Append Entries的时间间隔</p>
+</li>
+<li><p>Leader向其它节点发送Append Entries，Follower收到Append Entries之后会有 acknowledge response</p>
+</li>
+<li><p>当Follower超过election timeout没有收到心跳信息，就会变成Candidate，开启下一个term</p>
+</li>
+<li><p>假如两个节点同时变成Candidate，得票数一样，那么没有节点会得到<code>大多数</code>“选票”，进入下一个term，重新选举</p>
+</li>
+</ul>
+<h3 id="Log复制"><a href="#Log复制" class="headerlink" title="Log复制"></a>Log复制</h3><h5 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h5><ul>
+<li>所有客户端发来的针对集群的改变都需要经过Leader</li>
+<li>Leader收到Client发来的改变后，不会马上提交变化，而是先加到log列表中</li>
+<li>Leader将log发往其它节点</li>
+<li>当多数节点都收到了log，Leader会提交变化，并通知节点提交变化</li>
+</ul>
+<h5 id="详情"><a href="#详情" class="headerlink" title="详情"></a>详情</h5><ul>
+<li><p>Client发送请求到Leader</p>
+</li>
+<li><p>Leader生成log</p>
+</li>
+<li><p>Log随每次心跳发送的Append Entries“复制”到Follower</p>
+</li>
+<li><p>收到大多数节点的Acknowledge之后，Leader会提交变化，同时向client发送response</p>
+</li>
+<li><p>commit信息随心跳发往Follower</p>
+</li>
+<li><p>遇到分区故障时，raft依然可以保持一致性</p>
+</li>
+<li><p>接收到更高term的Append Entries时，原有的Leader会变为Follower，节点中的未提交logs会被接收到的新Append Entries中的覆盖</p>
+</li>
+</ul>
+<p>参考：<a target="_blank" rel="noopener" href="http://thesecretlivesofdata.com/raft">http://thesecretlivesofdata.com/raft</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/12/24/%E5%AD%A6%E4%B9%A0Spring-Cloud-%E4%BA%94-Raft%E7%AE%97%E6%B3%95/" data-id="cm48jokd3001koni885bdat61" data-title="学习Spring Cloud(五): Raft算法" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/01/25/%E8%B7%A8%E5%9F%9F%E5%90%8D%E5%85%B1%E4%BA%AB%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81%E9%97%AE%E9%A2%98/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          跨域名共享登录状态问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/12/20/%E5%AD%A6%E4%B9%A0Spring-Cloud-%E5%9B%9B-%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E4%B8%8E%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">学习Spring Cloud(四): 分布式理论与注册中心</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

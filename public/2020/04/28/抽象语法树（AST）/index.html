@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>抽象语法树（AST） | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="一个极简编译器的实现一篇文章 ： https:&#x2F;&#x2F;github.com&#x2F;jamiebuilds&#x2F;the-super-tiny-compiler&#x2F;blob&#x2F;master&#x2F;the-super-tiny-compiler.js文章里实现了一个简单的编译器，将LISP代码编译为C代码：    数学算式 LISP C    2 + (4 - 2) (add 2 (subtract 4 2)) add(2,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="抽象语法树（AST）">
+<meta property="og:url" content="http://example.com/2020/04/28/%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%EF%BC%88AST%EF%BC%89/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="一个极简编译器的实现一篇文章 ： https:&#x2F;&#x2F;github.com&#x2F;jamiebuilds&#x2F;the-super-tiny-compiler&#x2F;blob&#x2F;master&#x2F;the-super-tiny-compiler.js文章里实现了一个简单的编译器，将LISP代码编译为C代码：    数学算式 LISP C    2 + (4 - 2) (add 2 (subtract 4 2)) add(2,">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-28T12:35:00.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.762Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-抽象语法树（AST）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2020/04/28/%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%EF%BC%88AST%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2020-04-28T12:35:00.000Z" itemprop="datePublished">2020-04-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      抽象语法树（AST）
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="一个极简编译器的实现"><a href="#一个极简编译器的实现" class="headerlink" title="一个极简编译器的实现"></a>一个极简编译器的实现</h1><p>一篇文章 ： <a target="_blank" rel="noopener" href="https://github.com/jamiebuilds/the-super-tiny-compiler/blob/master/the-super-tiny-compiler.js">https://github.com/jamiebuilds/the-super-tiny-compiler/blob/master/the-super-tiny-compiler.js</a><br>文章里实现了一个简单的编译器，将LISP代码编译为C代码：</p>
+<table>
+<thead>
+<tr>
+<th>数学算式</th>
+<th>LISP</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2 + (4 - 2)</td>
+<td>(add 2 (subtract 4 2))</td>
+<td>add(2, subtract(4, 2))</td>
+</tr>
+</tbody></table>
+<p>代码编译通常经过三个阶段：</p>
+<ul>
+<li>Parsing</li>
+<li>Transformation</li>
+<li>Code Generation</li>
+</ul>
+<h3 id="Parsing"><a href="#Parsing" class="headerlink" title="Parsing"></a>Parsing</h3><h5 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(add 2 (subtract 4 2))</span><br></pre></td></tr></table></figure>
+<h5 id="Lexical-Analysis-Result"><a href="#Lexical-Analysis-Result" class="headerlink" title="Lexical Analysis Result"></a>Lexical Analysis Result</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">   &#123; type: &#x27;paren&#x27;,  value: &#x27;(&#x27;        &#125;,</span><br><span class="line">   &#123; type: &#x27;name&#x27;,   value: &#x27;add&#x27;      &#125;,</span><br><span class="line">   &#123; type: &#x27;number&#x27;, value: &#x27;2&#x27;        &#125;,</span><br><span class="line">   &#123; type: &#x27;paren&#x27;,  value: &#x27;(&#x27;        &#125;,</span><br><span class="line">   &#123; type: &#x27;name&#x27;,   value: &#x27;subtract&#x27; &#125;,</span><br><span class="line">   &#123; type: &#x27;number&#x27;, value: &#x27;4&#x27;        &#125;,</span><br><span class="line">   &#123; type: &#x27;number&#x27;, value: &#x27;2&#x27;        &#125;,</span><br><span class="line">   &#123; type: &#x27;paren&#x27;,  value: &#x27;)&#x27;        &#125;,</span><br><span class="line">   &#123; type: &#x27;paren&#x27;,  value: &#x27;)&#x27;        &#125;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h5 id="Syntactic-Analysis-Result"><a href="#Syntactic-Analysis-Result" class="headerlink" title="Syntactic Analysis Result"></a>Syntactic Analysis Result</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   type: &#x27;Program&#x27;,</span><br><span class="line">   body: [&#123;</span><br><span class="line">      type: &#x27;CallExpression&#x27;,</span><br><span class="line">      name: &#x27;add&#x27;,</span><br><span class="line">      params: [&#123;</span><br><span class="line">        type: &#x27;NumberLiteral&#x27;,</span><br><span class="line">        value: &#x27;2&#x27;,</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      type: &#x27;CallExpression&#x27;,</span><br><span class="line">      name: &#x27;subtract&#x27;,</span><br><span class="line">      params: [&#123;</span><br><span class="line">        type: &#x27;NumberLiteral&#x27;,</span><br><span class="line">        value: &#x27;4&#x27;,</span><br><span class="line">      &#125;, &#123;</span><br><span class="line">        type: &#x27;NumberLiteral&#x27;,</span><br><span class="line">         value: &#x27;2&#x27;,</span><br><span class="line">       &#125;]</span><br><span class="line">     &#125;]</span><br><span class="line">    &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Transformation"><a href="#Transformation" class="headerlink" title="Transformation"></a>Transformation</h3><ul>
+<li>深度优先<strong>遍历</strong>旧AST，作出相应的<strong>修改</strong>，生成新AST</li>
+</ul>
+<h5 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h5><p>创建Visitor对象，定义遍历经过每一种节点时的行为</p>
+<h5 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h5><p>实现深度优先遍历的方法</p>
+<h3 id="Code-Generation"><a href="#Code-Generation" class="headerlink" title="Code Generation"></a>Code Generation</h3><p>将AST重新序列化，组成目标代码</p>
+<h1 id="JavaScript中的AST"><a href="#JavaScript中的AST" class="headerlink" title="JavaScript中的AST"></a>JavaScript中的AST</h1><p><a target="_blank" rel="noopener" href="https://astexplorer.net/">AST Explorer</a></p>
+<h3 id="Babel"><a href="#Babel" class="headerlink" title="Babel"></a>Babel</h3><p><a target="_blank" rel="noopener" href="https://babel.docschina.org/">https://babel.docschina.org/</a></p>
+<h5 id="babel-babylon"><a href="#babel-babylon" class="headerlink" title="babel&#x2F;babylon"></a>babel&#x2F;babylon</h5><p><a target="_blank" rel="noopener" href="https://github.com/babel/babylon">babel&#x2F;babylon</a><br><a target="_blank" rel="noopener" href="https://babeljs.io/docs/en/next/babel-parser.html">babel-parser</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install @babel/parser --save-dev</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> code = <span class="string">`const text = &#x27;Hello World&#x27;;`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ast = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>).<span class="title function_">parse</span>(code);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;ast&quot;</span>, ast);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="babel-traverse"><a href="#babel-traverse" class="headerlink" title="babel&#x2F;traverse"></a>babel&#x2F;traverse</h5><p><a target="_blank" rel="noopener" href="https://github.com/babel/babel/tree/master/packages/babel-traverse">babel-traverse</a><br><a target="_blank" rel="noopener" href="https://babel.docschina.org/docs/en/babel-core">babel-core</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install @babel/traverse --save-dev</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> code = <span class="string">`const text = &#x27;Hello World&#x27;;`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ast = <span class="built_in">require</span>(<span class="string">&quot;@babel/parser&quot;</span>).<span class="title function_">parse</span>(code);</span><br><span class="line"></span><br><span class="line"><span class="built_in">require</span>(<span class="string">&quot;@babel/traverse&quot;</span>).<span class="title function_">default</span>(ast, &#123;</span><br><span class="line">  <span class="title function_">enter</span>(<span class="params">path</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;path type is &quot;</span>, path.<span class="property">type</span>);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//path type is  Program</span></span><br><span class="line"><span class="comment">//path type is  VariableDeclaration</span></span><br><span class="line"><span class="comment">//path type is  VariableDeclarator</span></span><br><span class="line"><span class="comment">//path type is  Identifier</span></span><br><span class="line"><span class="comment">//path type is  StringLiteral</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">const code = `const text = &#x27;Hello World&#x27;;`;</span><br><span class="line"></span><br><span class="line">const ast = require(&quot;@babel/parser&quot;).parse(code);</span><br><span class="line"></span><br><span class="line">require(&quot;@babel/traverse&quot;).default(ast, &#123;</span><br><span class="line">  enter(path) &#123;</span><br><span class="line">    if (path.node.type === &quot;StringLiteral&quot; &amp;&amp; path.node.value) &#123;</span><br><span class="line">      path.node.value = `$&#123;path.node.value&#125; new!`;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="babel-generator"><a href="#babel-generator" class="headerlink" title="babel&#x2F;generator"></a>babel&#x2F;generator</h5><p><a target="_blank" rel="noopener" href="https://babel.docschina.org/docs/en/babel-generator">babel-generator</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install @babel/traverse --save-dev</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">const code = `const text = &#x27;Hello World&#x27;;`;</span><br><span class="line"></span><br><span class="line">const ast = require(&quot;@babel/parser&quot;).parse(code);</span><br><span class="line"></span><br><span class="line">require(&quot;@babel/traverse&quot;).default(ast, &#123;</span><br><span class="line">  enter(path) &#123;</span><br><span class="line">    if (path.node.type === &quot;StringLiteral&quot; &amp;&amp; path.node.value) &#123;</span><br><span class="line">      path.node.value = `$&#123;path.node.value&#125; new!`;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">const output = require(&quot;@babel/generator&quot;).default(ast, &#123;&#125;);</span><br><span class="line"></span><br><span class="line">console.log(output.code);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>参考资料：<br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/doc/1260">https://cloud.tencent.com/developer/doc/1260</a><br><a target="_blank" rel="noopener" href="https://www.zcfy.cc/article/347">https://www.zcfy.cc/article/347</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/04/28/%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%EF%BC%88AST%EF%BC%89/" data-id="cm48jokd3001ooni824b858qk" data-title="抽象语法树（AST）" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/05/08/redux-persist/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          redux-persist
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/11/package-lock-json-%E7%9B%B8%E5%85%B3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">package-lock.json 相关</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

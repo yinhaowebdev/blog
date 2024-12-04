@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>React High Order Component | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="高阶函数：接受一个或多个函数并返回一个函数123456var add &#x3D; function (x) &#123;      return function (y) &#123;          return x + y;      &#125; &#125;add(1)(2); &#x2F;&#x2F; 3 JS中，array的map、filter、reduce等方法就是高阶函数的例子 12345var numbe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React High Order Component">
+<meta property="og:url" content="http://example.com/2019/07/25/React-High-Order-Component/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="高阶函数：接受一个或多个函数并返回一个函数123456var add &#x3D; function (x) &#123;      return function (y) &#123;          return x + y;      &#125; &#125;add(1)(2); &#x2F;&#x2F; 3 JS中，array的map、filter、reduce等方法就是高阶函数的例子 12345var numbe">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-07-25T14:45:00.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.757Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-React-High-Order-Component" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/07/25/React-High-Order-Component/" class="article-date">
+  <time class="dt-published" datetime="2019-07-25T14:45:00.000Z" itemprop="datePublished">2019-07-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      React High Order Component
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="高阶函数：接受一个或多个函数并返回一个函数"><a href="#高阶函数：接受一个或多个函数并返回一个函数" class="headerlink" title="高阶函数：接受一个或多个函数并返回一个函数"></a>高阶函数：接受一个或多个函数并返回一个函数</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var add = function (x) &#123;</span><br><span class="line">      return function (y) &#123;</span><br><span class="line">          return x + y;</span><br><span class="line">      &#125;</span><br><span class="line"> &#125;</span><br><span class="line">add(1)(2); // 3</span><br></pre></td></tr></table></figure>
+<p>JS中，array的map、filter、reduce等方法就是高阶函数的例子</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var numbers = [1, 2, 3, 4];</span><br><span class="line">function double(num) &#123;</span><br><span class="line">    return num * 2;</span><br><span class="line">&#125;</span><br><span class="line">var doubledNumbers = numbers.map(double); //[2,4,6,8]</span><br></pre></td></tr></table></figure>
+
+<h4 id="高阶函数的应用—柯里化"><a href="#高阶函数的应用—柯里化" class="headerlink" title="高阶函数的应用—柯里化"></a>高阶函数的应用—柯里化</h4><p>一道经典面试题</p>
+<blockquote>
+<p>写一个add方法实现以下效果</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">add(1) //1</span><br><span class="line">add(1)(2) //3</span><br><span class="line">add(1)(2)(3) //6</span><br><span class="line">add(1)(2)(3)(4) //10</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>答案之一:</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function add(a) &#123;</span><br><span class="line">    function sum(b) &#123; // 使用闭包</span><br><span class="line">    	a = a + b; // 累加</span><br><span class="line">    	return sum;</span><br><span class="line">    &#125;</span><br><span class="line">    sum.toString = function() &#123; // 重写toString()方法</span><br><span class="line">        return a;</span><br><span class="line">    &#125;</span><br><span class="line">    return sum; // 返回一个函数</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这里的add就是高阶函数</p>
+<h3 id="高阶组件：接受一个组件并返回一个组件"><a href="#高阶组件：接受一个组件并返回一个组件" class="headerlink" title="高阶组件：接受一个组件并返回一个组件"></a>高阶组件：接受一个组件并返回一个组件</h3><p>实现方式 1 属性代理</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const Container = (WrappedComponent) =&gt;</span><br><span class="line">	class extends React.Component &#123;</span><br><span class="line">		render() &#123;</span><br><span class="line">			let newProps = &#123; status: &#x27;ok&#x27; &#125;</span><br><span class="line">			return &lt;WrappedComponent &#123;...this.props&#125; &#123;...newProps&#125; /&gt;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>实现方式 2 反向继承</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const Container = (WrappedComponent) =&gt;</span><br><span class="line">	class extends WrappedComponent &#123;</span><br><span class="line">		render() &#123;</span><br><span class="line">			return super.render()</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips: super语法：</p>
+</blockquote>
+<p>1  super([arguments]); &#x2F;&#x2F; 访问父对象上的构造函数</p>
+<p>2  super.functionOnParent([arguments]); &#x2F;&#x2F; 访问对象上的方法</p>
+<p>高阶组件使用方式 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class App extends React.Component &#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        ...</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">export default Container(App);</span><br></pre></td></tr></table></figure>
+<p>or Decorator方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Container</span><br><span class="line">class App extends React.Component &#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    return (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        ...</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Tips: ES6装饰器的说明：</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@decorator</span><br><span class="line">class A &#123;&#125;</span><br><span class="line"></span><br><span class="line">// 等同于</span><br><span class="line"></span><br><span class="line">class A &#123;&#125;</span><br><span class="line">A = decorator(A) || A;</span><br></pre></td></tr></table></figure>
+
+<p>高阶组件的应用：</p>
+<ul>
+<li>控制props</li>
+<li>渲染劫持</li>
+<li>控制state</li>
+<li>为组件增加统一的样式或布局</li>
+<li>。。。</li>
+</ul>
+<h3 id="高阶组件应用之react-redux里的connect"><a href="#高阶组件应用之react-redux里的connect" class="headerlink" title="高阶组件应用之react-redux里的connect"></a>高阶组件应用之react-redux里的connect</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">import React, &#123; Component &#125; from &#x27;react&#x27;</span><br><span class="line">import PropTypes from &#x27;prop-types&#x27;</span><br><span class="line"></span><br><span class="line">const connect = (mapStateToProps)=&gt;(WrappedComponent) =&gt; &#123;</span><br><span class="line">  class Connect extends Component &#123;</span><br><span class="line">    static contextTypes = &#123;</span><br><span class="line">      store: PropTypes.object</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    constructor () &#123;</span><br><span class="line">      super()</span><br><span class="line">      this.state = &#123; allProps: &#123;&#125; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    componentWillMount () &#123;</span><br><span class="line">      const &#123; store &#125; = this.context</span><br><span class="line">      this._updateProps()</span><br><span class="line">      store.subscribe(() =&gt; this._updateProps())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _updateProps () &#123;</span><br><span class="line">      const &#123; store &#125; = this.context</span><br><span class="line">      let stateProps = mapStateToProps(store.getState())</span><br><span class="line">      stateProps.dispatch=store.dispatch</span><br><span class="line">      this.setState(&#123;</span><br><span class="line">        allProps: &#123; // 整合普通的 props 和从 state 生成的 props</span><br><span class="line">          ...stateProps,</span><br><span class="line">          ...this.props</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    render () &#123;</span><br><span class="line">      return &lt;WrappedComponent &#123;...this.state.allProps&#125;/&gt;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return Connect</span><br><span class="line">&#125;</span><br><span class="line">export default connect</span><br></pre></td></tr></table></figure>
+
+
+<p>使用connect</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import React, &#123; PureComponent &#125; from &#x27;react&#x27;;</span><br><span class="line">import &#123; connect &#125; from &#x27;dva&#x27;;</span><br><span class="line">import LoginForm from &#x27;./LoginForm&#x27;;</span><br><span class="line"></span><br><span class="line">@connect((&#123; login, loading &#125;) =&gt; (&#123;</span><br><span class="line">    login,</span><br><span class="line">    loading,</span><br><span class="line">&#125;))</span><br><span class="line">export default class Login extends PureComponent &#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        const &#123; dispatch, loading &#125; = this.props;</span><br><span class="line">        return (</span><br><span class="line">            &lt;LoginForm</span><br><span class="line">                isLoading=&#123;loading.effects[&#x27;login/login&#x27;]&#125;</span><br><span class="line">                onOk=&#123;(data) =&gt; &#123;</span><br><span class="line">                    dispatch(&#123;</span><br><span class="line">                        type: &#x27;login/login&#x27;,</span><br><span class="line">                        payload: &#123;</span><br><span class="line">                            ...data,</span><br><span class="line">                        &#125;,</span><br><span class="line">                    &#125;);</span><br><span class="line">                &#125;&#125;</span><br><span class="line">            /&gt;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：<br>1、不要在render中构建高阶组件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  // 每次调用 render 函数都会创建一个新的 EnhancedComponent</span><br><span class="line">  // EnhancedComponent1 !== EnhancedComponent2</span><br><span class="line">  const EnhancedComponent = enhance(MyComponent);</span><br><span class="line">  // 这将导致子树每次渲染都会进行卸载，和重新挂载的操作！</span><br><span class="line">  return &lt;EnhancedComponent /&gt;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、注意添加原组件的静态方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function enhance(WrappedComponent) &#123;</span><br><span class="line">  class Enhance extends React.Component &#123;/*...*/&#125;</span><br><span class="line">  // 必须准确知道应该拷贝哪些方法 :(</span><br><span class="line">  Enhance.staticMethod = WrappedComponent.staticMethod;</span><br><span class="line">  return Enhance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3、ref和key不会被传递</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/07/25/React-High-Order-Component/" data-id="cm48jokcz000koni8bia5bcgc" data-title="React High Order Component" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/07/30/redux-thunk/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          redux-thunk
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/07/23/%E8%B8%A9%E5%9D%91-create-react-app-%E6%94%AF%E6%8C%81decorators%E7%9A%84%E6%96%B9%E6%B3%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">踩坑-create-react-app 支持decorators的方法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

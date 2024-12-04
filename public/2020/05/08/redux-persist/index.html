@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>redux-persist | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="前端应用，状态信息可以存储在：  1 应用内部（eg:state 、redux） 2 URL  3 缓存（localStorage&#x2F;seesionStorage）  在使用SPA框架开发时，通常尽量采用上述第一种方式以符合框架设计者的意图，方便状态管理。然而，有时产品会有这样的需求：刷新页面时不改变某些状态（如id），此时可能考虑使用URL进行辅助的存储。然而，产品说刷新时不止id不变，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redux-persist">
+<meta property="og:url" content="http://example.com/2020/05/08/redux-persist/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="前端应用，状态信息可以存储在：  1 应用内部（eg:state 、redux） 2 URL  3 缓存（localStorage&#x2F;seesionStorage）  在使用SPA框架开发时，通常尽量采用上述第一种方式以符合框架设计者的意图，方便状态管理。然而，有时产品会有这样的需求：刷新页面时不改变某些状态（如id），此时可能考虑使用URL进行辅助的存储。然而，产品说刷新时不止id不变，">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-05-08T06:25:00.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.760Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-redux-persist" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2020/05/08/redux-persist/" class="article-date">
+  <time class="dt-published" datetime="2020-05-08T06:25:00.000Z" itemprop="datePublished">2020-05-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      redux-persist
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前端应用，状态信息可以存储在：</p>
+<ul>
+<li>1 应用内部（eg:state 、redux）</li>
+<li>2 URL </li>
+<li>3 缓存（localStorage&#x2F;seesionStorage）</li>
+</ul>
+<p>在使用SPA框架开发时，通常尽量采用上述第一种方式以符合框架设计者的意图，方便状态管理。<br>然而，有时产品会有这样的需求：刷新页面时不改变某些状态（如id），此时可能考虑使用URL进行辅助的存储。<br>然而，产品说刷新时不止id不变，整个页面的状态都不可以改变，用URL存这么复杂的状态，会遇到长度限制和管理混乱的问题。<br>于是，考虑使用上述第三种方式。<br>自己实现的话思路大概是：</p>
+<ul>
+<li>修改redux中的监听器，当有状态更新时同步到缓存</li>
+<li>修改应用最外层组件，在挂载时读取缓存，如果有，读取后手动触发redux状态更新</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/rt2zz/redux-persist">redux-persist</a>是一个实现redux状态持久化的库。下面在介绍它在umi.js中的使用。</p>
+<p>首先安装依赖，由于umi和redux-persist在各个大版本区别较大，读者尝试时请注意对应版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//package.json</span><br><span class="line">    &quot;umi&quot;: &quot;2.13.1&quot;,</span><br><span class="line">    &quot;umi-plugin-react&quot;: &quot;1.15.1&quot;,</span><br><span class="line">    &quot;redux-persist&quot;: &quot;^5.10.0&quot;</span><br></pre></td></tr></table></figure>
+<p>添加src&#x2F;app.js：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">import &#123; persistStore, persistReducer &#125; from &#x27;redux-persist&#x27;;</span><br><span class="line">import storage from &#x27;redux-persist/es/storage/session&#x27;;</span><br><span class="line"></span><br><span class="line">const persistConfig = &#123;</span><br><span class="line">    timeout: 1000, // you can define your time. But is required.</span><br><span class="line">    key: &#x27;root&#x27;,</span><br><span class="line">    storage,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">const persistEnhancer = () =&gt; createStore =&gt; (reducer, initialState, enhancer) =&gt; &#123;</span><br><span class="line">    const store = createStore(persistReducer(persistConfig, reducer), initialState, enhancer);</span><br><span class="line">    const persist = persistStore(store, null);</span><br><span class="line">    return &#123;</span><br><span class="line">        persist,</span><br><span class="line">        ...store,</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line">export const dva =</span><br><span class="line">    process.env.APP_TYPE === &#x27;build&#x27;</span><br><span class="line">        ? &#123;</span><br><span class="line">              config: &#123;</span><br><span class="line">                  extraEnhancers: [persistEnhancer()],</span><br><span class="line">              &#125;,</span><br><span class="line">          &#125;</span><br><span class="line">        : &#123;</span><br><span class="line">              config: &#123;</span><br><span class="line">                  extraEnhancers: [persistEnhancer()],</span><br><span class="line">              &#125;,</span><br><span class="line">              plugins: [</span><br><span class="line">                  &#123;</span><br><span class="line">                      // onAction: createLogger(),</span><br><span class="line">                  &#125;,</span><br><span class="line">              ],</span><br><span class="line">          &#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>修改最外层组件，本例中是BasicLayout.js：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//...</span><br><span class="line">import &#123; PersistGate &#125; from &#x27;redux-persist/integration/react&#x27;;</span><br><span class="line">//...</span><br><span class="line">return (</span><br><span class="line">            &lt;React.Fragment&gt;</span><br><span class="line">                &lt;PersistGate persistor=&#123;window.g_app._store.persist&#125; loading=&#123;null&#125;&gt;</span><br><span class="line">                    &lt;DocumentTitle title=&quot;&quot;&gt;</span><br><span class="line">                        &lt;ContainerQuery query=&#123;query&#125;&gt;</span><br><span class="line">                            &#123;params =&gt; (</span><br><span class="line">                                &lt;Context.Provider value=&#123;this.getContext()&#125;&gt;</span><br><span class="line">                                    &lt;ConfigProvider locale=&#123;zhCN&#125;&gt;</span><br><span class="line">                                        &lt;div className=&#123;classNames(params)&#125;&gt;&#123;layout&#125;&lt;/div&gt;</span><br><span class="line">                                    &lt;/ConfigProvider&gt;</span><br><span class="line">                                &lt;/Context.Provider&gt;</span><br><span class="line">                            )&#125;</span><br><span class="line">                        &lt;/ContainerQuery&gt;</span><br><span class="line">                    &lt;/DocumentTitle&gt;</span><br><span class="line">                    &lt;Suspense fallback=&#123;&lt;PageLoading /&gt;&#125; /&gt;</span><br><span class="line">                &lt;/PersistGate&gt;</span><br><span class="line">            &lt;/React.Fragment&gt;</span><br><span class="line">        );</span><br><span class="line">//...</span><br></pre></td></tr></table></figure>
+<p>现在刷新浏览器试试吧？</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/05/08/redux-persist/" data-id="cm48jokd10015oni8dq50gr16" data-title="redux-persist" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/05/14/CommonJS-ES6-Module/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          CommonJS &amp; ES6 Module
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/04/28/%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%EF%BC%88AST%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">抽象语法树（AST）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

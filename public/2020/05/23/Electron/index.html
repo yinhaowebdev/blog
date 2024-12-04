@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Electron | Billy&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Electron是一个跨平台桌面应用开发工具 安装1npm install --save-dev electron Hello World1234567891011121314151617const &#123; app, BrowserWindow &#125; &#x3D; require(&#x27;electron&#x27;)function createWindow () &#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Electron">
+<meta property="og:url" content="http://example.com/2020/05/23/Electron/index.html">
+<meta property="og:site_name" content="Billy&#39;s blog">
+<meta property="og:description" content="Electron是一个跨平台桌面应用开发工具 安装1npm install --save-dev electron Hello World1234567891011121314151617const &#123; app, BrowserWindow &#125; &#x3D; require(&#x27;electron&#x27;)function createWindow () &#123;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-05-22T16:15:00.000Z">
+<meta property="article:modified_time" content="2024-12-03T14:16:15.755Z">
+<meta property="article:author" content="Billy Yin">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Billy's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Billy&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Actually it is more like a hand note of myself</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Electron" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2020/05/23/Electron/" class="article-date">
+  <time class="dt-published" datetime="2020-05-22T16:15:00.000Z" itemprop="datePublished">2020-05-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Electron
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>Electron是一个跨平台桌面应用开发工具</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --save-dev electron</span><br></pre></td></tr></table></figure>
+<h3 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">const &#123; app, BrowserWindow &#125; = require(&#x27;electron&#x27;)</span><br><span class="line"></span><br><span class="line">function createWindow () &#123;   </span><br><span class="line">  // 创建浏览器窗口</span><br><span class="line">  let win = new BrowserWindow(&#123;</span><br><span class="line">    width: 800,</span><br><span class="line">    height: 600,</span><br><span class="line">    webPreferences: &#123;</span><br><span class="line">      nodeIntegration: true // 开启nodejs功能</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  // 加载index.html文件</span><br><span class="line">  win.loadFile(&#x27;index.html&#x27;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">app.whenReady().then(createWindow)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://github.com/electron/electron-quick-start">electron&#x2F;electron-quick-start</a><br><a target="_blank" rel="noopener" href="https://www.electronjs.org/docs/tutorial/boilerplates-and-clis#electron-react-boilerplate">官网模版推荐</a></p>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p>一个主进程  + 一或多个渲染进程<br>类似  Chromium 的多进程架构</p>
+<p>在普通的浏览器中，web页面通常在沙盒环境中运行，并且无法访问操作系统的原生资源。 然而 Electron 的用户在 Node.js 的 API 支持下可以在页面中和操作系统进行一些底层交互。</p>
+<p>主进程使用 BrowserWindow 实例创建页面。 每个 BrowserWindow 实例都在自己的渲染进程里运行页面。 当一个 BrowserWindow 实例被销毁后，相应的渲染进程也会被终止。</p>
+<h3 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h3><h4 id="HTML5-APIs"><a href="#HTML5-APIs" class="headerlink" title="HTML5 APIs"></a>HTML5 APIs</h4><ul>
+<li>localStorage</li>
+<li>sessionStorage</li>
+<li>Indexed DB <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/IndexedDB_API">MDN文档</a>  <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2018/07/indexeddb.html">参考博客</a></li>
+</ul>
+<h4 id="Electron-remote-模块"><a href="#Electron-remote-模块" class="headerlink" title="Electron remote 模块"></a>Electron remote 模块</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// main.js</span><br><span class="line">    global.sharedObject = &#123;</span><br><span class="line">      someProperty: &#x27;default value&#x27;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// renderer.js</span><br><span class="line">var electron = require(&#x27;electron&#x27;)</span><br><span class="line">var sharedObject = electron.remote.getGlobal(&#x27;sharedObject&#x27;)</span><br><span class="line"></span><br><span class="line">console.log(sharedObject.someProperty)</span><br></pre></td></tr></table></figure>
+<h3 id="Electron-ipc"><a href="#Electron-ipc" class="headerlink" title="Electron ipc"></a>Electron ipc</h3><p><a target="_blank" rel="noopener" href="https://www.electronjs.org/docs/api/ipc-main">ipcMain</a> &#x2F; <a target="_blank" rel="noopener" href="https://www.electronjs.org/docs/api/ipc-renderer">ipcRenderer</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// 在主进程中.</span><br><span class="line">const &#123; ipcMain &#125; = require(&#x27;electron&#x27;)</span><br><span class="line">ipcMain.on(&#x27;asynchronous-message&#x27;, (event, arg) =&gt; &#123;</span><br><span class="line">  console.log(arg) // prints &quot;ping&quot;</span><br><span class="line">  event.reply(&#x27;asynchronous-reply&#x27;, &#x27;pong&#x27;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">ipcMain.on(&#x27;synchronous-message&#x27;, (event, arg) =&gt; &#123;</span><br><span class="line">  console.log(arg) // prints &quot;ping&quot;</span><br><span class="line">  event.returnValue = &#x27;pong&#x27;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//在渲染器进程 (网页) 中。</span><br><span class="line">const &#123; ipcRenderer &#125; = require(&#x27;electron&#x27;)</span><br><span class="line">console.log(ipcRenderer.sendSync(&#x27;synchronous-message&#x27;, &#x27;ping&#x27;)) // prints &quot;pong&quot;</span><br><span class="line"></span><br><span class="line">ipcRenderer.on(&#x27;asynchronous-reply&#x27;, (event, arg) =&gt; &#123;</span><br><span class="line">  console.log(arg) // prints &quot;pong&quot;</span><br><span class="line">&#125;)</span><br><span class="line">ipcRenderer.send(&#x27;asynchronous-message&#x27;, &#x27;ping&#x27;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 在主进程中.</span><br><span class="line">const &#123;ipcMain&#125; = require(&#x27;electron&#x27;);</span><br><span class="line">ipcMain.on(&#x27;synchronous-message&#x27;, (event, arg) =&gt; &#123; </span><br><span class="line">  console.log(arg) // prints &quot;ping&quot; event.returnValue = &#x27;pong&#x27; </span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//在渲染器进程 (网页) 中。</span><br><span class="line">const &#123; ipcRenderer &#125; = require(&#x27;electron&#x27;);</span><br><span class="line">console.log(ipcRenderer.sendSync(&#x27;synchronous-message&#x27;, &#x27;ping&#x27;)) // prints &quot;pong&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h3><p><a target="_blank" rel="noopener" href="https://www.electron.build/">electron-builder</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add electron-builder --dev</span><br></pre></td></tr></table></figure>
+<p>在package.json中添加build配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">//摘自 react-electron-template 模版项目</span><br><span class="line">&quot;build&quot;: &#123;</span><br><span class="line">    &quot;productName&quot;: &quot;ElectronReact&quot;,</span><br><span class="line">    &quot;appId&quot;: &quot;org.develar.ElectronReact&quot;,</span><br><span class="line">    &quot;files&quot;: [</span><br><span class="line">      &quot;dist/&quot;,</span><br><span class="line">      &quot;node_modules/&quot;,</span><br><span class="line">      &quot;app.html&quot;,</span><br><span class="line">      &quot;main.prod.js&quot;,</span><br><span class="line">      &quot;main.prod.js.map&quot;,</span><br><span class="line">      &quot;package.json&quot;</span><br><span class="line">    ],</span><br><span class="line">    &quot;dmg&quot;: &#123;</span><br><span class="line">      &quot;contents&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">          &quot;x&quot;: 130,</span><br><span class="line">          &quot;y&quot;: 220</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          &quot;x&quot;: 410,</span><br><span class="line">          &quot;y&quot;: 220,</span><br><span class="line">          &quot;type&quot;: &quot;link&quot;,</span><br><span class="line">          &quot;path&quot;: &quot;/Applications&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;win&quot;: &#123;</span><br><span class="line">      &quot;target&quot;: [</span><br><span class="line">        &quot;nsis&quot;,</span><br><span class="line">        &quot;msi&quot;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;linux&quot;: &#123;</span><br><span class="line">      &quot;target&quot;: [</span><br><span class="line">        &quot;deb&quot;,</span><br><span class="line">        &quot;rpm&quot;,</span><br><span class="line">        &quot;AppImage&quot;</span><br><span class="line">      ],</span><br><span class="line">      &quot;category&quot;: &quot;Development&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;directories&quot;: &#123;</span><br><span class="line">      &quot;buildResources&quot;: &quot;resources&quot;,</span><br><span class="line">      &quot;output&quot;: &quot;release&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;publish&quot;: &#123;</span><br><span class="line">      &quot;provider&quot;: &quot;github&quot;,</span><br><span class="line">      &quot;owner&quot;: &quot;electron-react-boilerplate&quot;,</span><br><span class="line">      &quot;repo&quot;: &quot;electron-react-boilerplate&quot;,</span><br><span class="line">      &quot;private&quot;: false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.electronjs.org/docs">https://www.electronjs.org/docs</a></p>
+<p><a target="_blank" rel="noopener" href="https://newsn.net/say/electron-ipc.html">https://newsn.net/say/electron-ipc.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://electron.org.cn/builder/index.html">https://electron.org.cn/builder/index.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/05/23/Electron/" data-id="cm48jokcy000boni8alp2at8v" data-title="Electron" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/06/07/Web-Components/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Web Components
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/05/14/CommonJS-ES6-Module/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">CommonJS &amp; ES6 Module</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/FrontEnd/" rel="tag">FrontEnd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/FrontEnd/" style="font-size: 10px;">FrontEnd</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/06/">June 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">January 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">September 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">April 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">May 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">February 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">September 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">August 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/11/28/Dependecy-Injection/">Dependecy Injection</a>
+          </li>
+        
+          <li>
+            <a href="/2024/06/28/Date-Time-Format/">Date Time Format</a>
+          </li>
+        
+          <li>
+            <a href="/2024/04/16/Jest/">Jest</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/28/%E3%80%8AGoogle-%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E3%80%8B-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/">《Google 软件工程》 读书笔记1</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/13/VS-Code-C-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-MacOS/">VS Code C++ 环境配置 (MacOS)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Billy Yin<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
